@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+import os
 from datetime import datetime, timedelta
 
 url = 'http://apis.data.go.kr/1360000/AsosHourlyInfoService/getWthrDataList'
@@ -21,7 +22,6 @@ for year in range(start_year, end_year + 1):
     for stn_id in station_ids:
         print(f"Processing station ID: {stn_id}")
         current_date = year_start_date
-        year_data = []
 
         while current_date <= year_end_date:
             start_dt = current_date.strftime('%Y%m%d')
@@ -40,6 +40,8 @@ for year in range(start_year, end_year + 1):
                 'endHh': '23',
                 'stnIds': stn_id
             }
+
+            year_data = []  # 현재 구간 데이터를 임시로 저장
 
             while True:
                 response = requests.get(url, params=params)
@@ -77,23 +79,29 @@ for year in range(start_year, end_year + 1):
                             print("Response is not valid JSON. Content:", response.text)
                             break
                     else:
-                        
+                        print("Invalid content type received.")
                         break
                 else:
                     print(f"HTTP Error {response.status_code}: {response.text}")
                     break
 
-            # 날짜 범위 증가
-            current_date += date_increment
+            # 저장 디렉토리 설정
+            save_dir = os.path.join("..", "..", "googledrive", "data", "meteorological")
+            os.makedirs(save_dir, exist_ok=True)
 
-        # 해당 관측소의 연도별 데이터 저장
-        if year_data:
-            df = pd.DataFrame(year_data)
-            df = df[['tm', 'stnId', 'stnNm', 'ta']]
-            file_name_csv = f'all_station_ta_data_{year}_{stn_id}.csv'
-            file_name_json = f'all_station_ta_data_{year}_{stn_id}.json'
-            df.to_csv(file_name_csv, index=False, encoding='utf-8-sig')
-            df.to_json(file_name_json, orient='records', lines=True, force_ascii=False)
-            print(f"Data for station {stn_id} in year {year} saved to {file_name_csv} and {file_name_json}.")
-        else:
-            print(f"No data collected for station {stn_id} in year {year}.")
+            # 구간별 저장 (해당 날짜 범위)
+            if year_data:
+                df = pd.DataFrame(year_data)
+                df = df[['tm', 'stnId', 'stnNm', 'ta']]
+
+                file_name_csv = os.path.join(save_dir, f'station_{stn_id}_{start_dt}_{end_dt}.csv')
+                file_name_json = os.path.join(save_dir, f'station_{stn_id}_{start_dt}_{end_dt}.json')
+
+                df.to_csv(file_name_csv, index=False, encoding='utf-8-sig')
+                df.to_json(file_name_json, orient='records', lines=True, force_ascii=False)
+
+                print(f"Data from {start_dt} to {end_dt} for station {stn_id} saved to {file_name_csv} and {file_name_json}.")
+            else:
+                print(f"No data collected for station {stn_id} from {start_dt} to {end_dt}.")
+
+            current_date += date_increment
