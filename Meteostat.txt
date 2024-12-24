@@ -1,0 +1,4 @@
+ Meteostat
+NASA POWER Data Access Viewer
+ECMWF Reanalysis (ERA5) : Copernicus Climate Data Store
+NOAA (National Oceanic and Atmospheric Administration)
