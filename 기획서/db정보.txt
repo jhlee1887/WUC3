@@ -1,0 +1,49 @@
+[테이블 정보]
+
+(1) Locations (지역 정보)
+설명: 특정 도시, 구역, 또는 관측소의 위치 정보를 저장.
+컬럼:
+location_id (PK): 위치 ID (Primary Key)
+name: 지역 이름 (예: 서울시, 강남구 등)
+latitude: 위도
+longitude: 경도
+area_type: 지역 유형 (예: 도심, 외곽, 녹지)
+population_density: 인구 밀도 (명/㎢)
+
+(2) Weather_Data (기상 데이터)
+설명: 시간별 기온, 습도, 풍속 등의 기상 데이터를 저장.
+컬럼:
+weather_id (PK): 기상 데이터 ID
+location_id (FK): 위치 ID (Locations 테이블 참조)
+timestamp: 관측 시간 (YYYY-MM-DD HH:mm)
+temperature: 기온 (°C)
+humidity: 습도 (%)
+wind_speed: 풍속 (m/s)
+precipitation: 강수량 (mm)
+
+(3) Land_Use (토지 이용 정보)
+설명: 도시화, 건물 밀도, 녹지 면적 등 토지 이용 정보를 저장.
+컬럼:
+land_use_id (PK): 토지 이용 ID
+location_id (FK): 위치 ID (Locations 테이블 참조)
+timestamp: 데이터 수집 시간 (YYYY-MM-DD HH:mm)
+urban_area: 도시화 면적 (㎡)
+green_area: 녹지 면적 (㎡)
+building_density: 건물 밀도 (건물 수/㎢)
+
+(4) Heat_Island_Index (열섬 지수)
+설명: 열섬 현상을 수치화한 데이터.
+컬럼:
+heat_island_id (PK): 열섬 지수 ID
+location_id (FK): 위치 ID (Locations 테이블 참조)
+timestamp: 데이터 수집 시간 (YYYY-MM-DD HH:mm)
+temperature_difference: 도심과 외곽의 기온 차이 (°C)
+heat_index: 열섬 지수 (계산된 값)
+
+[ERD 관계]
+Locations ↔ Weather_Data: 1:N 관계 (한 위치에서 여러 기상 데이터)
+Locations ↔ Land_Use: 1:N 관계 (한 위치에서 여러 토지 이용 데이터)
+Locations ↔ Heat_Island_Index: 1:N 관계 (한 위치에서 여러 열섬 지수 데이터)
+
+++추가사항
+데이터 분석을 위해 Heat_Island_Index 테이블의 temperature_difference는 Weather_Data 테이블에서 계산하여 저장
