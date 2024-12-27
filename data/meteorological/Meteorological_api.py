@@ -11,7 +11,7 @@ station_ids = station[0].tolist()
 
 start_year = 1970
 end_year = 2024
-date_increment = timedelta(days=30)
+date_increment = timedelta(days=365)
 
 # 연도별 데이터 수집 및 저장
 for year in range(start_year, end_year + 1):
@@ -85,15 +85,12 @@ for year in range(start_year, end_year + 1):
                     print(f"HTTP Error {response.status_code}: {response.text}")
                     break
 
-            # 저장 디렉토리 설정
             save_dir = os.path.join("..", "..", "googledrive", "data", "meteorological")
             os.makedirs(save_dir, exist_ok=True)
 
-            # 구간별 저장 (해당 날짜 범위)
             if year_data:
                 df = pd.DataFrame(year_data)
-                df = df[['tm', 'stnId', 'stnNm', 'ta']]
-
+    
                 file_name_csv = os.path.join(save_dir, f'station_{stn_id}_{start_dt}_{end_dt}.csv')
                 file_name_json = os.path.join(save_dir, f'station_{stn_id}_{start_dt}_{end_dt}.json')
 
