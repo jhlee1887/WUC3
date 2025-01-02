@@ -12,7 +12,7 @@ station_ids = station[0].tolist()
 
 start_year = 1970
 end_year = 2024
-date_increment = timedelta(days=365)
+date_increment = timedelta(days=41)
 
 save_dir = os.path.join("..", "..", "googledrive", "data", "meteorological")
 os.makedirs(save_dir, exist_ok=True)
