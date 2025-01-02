@@ -1,4 +1,5 @@
 __pycache__/
 *.pyc
 googledrive/
-final_df.csv
+data/final_df.csv
+base/data/
